@@ -73,18 +73,18 @@ describe("testjs", () => {
 
         cy.url().then((url) => {
 
-            let ArabicCities = ["جدة","دبي"]
-            let randomArabic = Math.floor(Math.random()*ArabicCities.length)
-            let englishCities = ["dubai","jeddah","riyadh"]
-            let randomEnglish = Math.floor(Math.random()*englishCities.length)
+            let ArabicCities = ["جدة", "دبي"]
+            let randomArabic = Math.floor(Math.random() * ArabicCities.length)
+            let englishCities = ["dubai", "jeddah", "riyadh"]
+            let randomEnglish = Math.floor(Math.random() * englishCities.length)
 
-            let roomVisitor = ["A","B"]
+            let roomVisitor = ["A", "B"]
 
-            let randomvistorNo = Math.floor(Math.random()*roomVisitor.length)
+            let randomvistorNo = Math.floor(Math.random() * roomVisitor.length)
 
-let lowestPrice = ""
+            let lowestPrice = ""
 
-let HighestPrice = ""
+            let HighestPrice = ""
 
             if (url.includes('ar')) {
 
@@ -102,28 +102,32 @@ let HighestPrice = ""
                 cy.get('[data-testid="AutoCompleteResultItem0"] > .sc-12clos8-5').click()
                 cy.get('[data-testid="HotelSearchBox__SearchButton"]').click()
                 cy.get('select[data-testid="HotelSearchBox__ReservationSelect_Select"]').select(roomVisitor[randomvistorNo])
-                cy.get('[data-testid="HotelSearchBox__SearchButton"]')
-
-                
-                // cy.document().its('readyState').should('eq', 'complete');
-
-                // point 8 last one 
-
                 cy.get('[data-testid="HotelSearchResult__sort__LOWEST_PRICE"]').click()
 
-                cy.get('[data-testid="HotelSearchResult__Hotel0__PriceLabel"] > .Price__Value').then((element)=>{
-                    
-                    lowestPrice=element.text()
-                })
+                // test # 7 
+
+                cy.get('[data-testid="HotelSearchResult__resultsFoundCount"]', { timeout: 10000 }).should('exist').should('be.visible').should('contain', "وجدنا");
 
 
+                // test # 8 
+
+                let prices = [];
+                let lowestPrice, highestPrice;
                 
-                cy.get('[data-testid="HotelSearchResult__Hotel39__PriceLabel"]').find("Price__Value").then((element)=>{
+                cy.get('.Price__Value').each((ele) => {
+                  prices.push(parseInt(ele.text(), 10));
+                }).then(() => {
+                  lowestPrice = prices[0];
+                  highestPrice = prices[prices.length - 1];
+                  
+                  expect(highestPrice).to.be.greaterThan(lowestPrice);
+                  console.log("lowestprice is"+lowestPrice)
+                  console.log("highestPrice is"+highestPrice)
 
-                    HighestPrice=element.text()
-                    console.log(HighestPrice)
+                });
 
-                })
+
+
 
             } else if (url.includes('en')) {
 
@@ -142,25 +146,33 @@ let HighestPrice = ""
                 cy.get('[data-testid="AutoCompleteResultItem0"] > .sc-12clos8-5').click()
                 cy.get('[data-testid="HotelSearchBox__SearchButton"]').click()
                 cy.get('select[data-testid="HotelSearchBox__ReservationSelect_Select"]').select(roomVisitor[randomvistorNo])
-                cy.get('[data-testid="HotelSearchBox__SearchButton"]')
-
-                // cy.document().trigger('pageLoaded');
-
-                // point 8 last one 
 
                 cy.get('[data-testid="HotelSearchResult__sort__LOWEST_PRICE"]').click()
 
-                cy.get('[data-testid="HotelSearchResult__Hotel0__PriceLabel"] > .Price__Value').then((element)=>{
-                    
-                    lowestPrice=element.text()
-                })
+                // test # 7 
+                cy.get('[data-testid="HotelSearchResult__resultsFoundCount"]', { timeout: 10000 }).should('exist').should('be.visible').should('contain', 'found');
 
-                cy.get('[data-testid="HotelSearchResult__Hotel39__PriceLabel"]').find("Price__Value").then((element)=>{
 
-                    HighestPrice=element.text()
-                    console.log(HighestPrice)
 
-                })
+
+                // test # 8 
+
+                let prices = [];
+                let lowestPrice, highestPrice;
+                
+                cy.get('.Price__Value').each((ele) => {
+                  prices.push(parseInt(ele.text(), 10));
+                }).then(() => {
+                  lowestPrice = prices[0];
+                  highestPrice = prices[prices.length - 1];
+                  
+                  expect(highestPrice).to.be.greaterThan(lowestPrice);
+                  console.log("lowestprice is"+lowestPrice)
+                  console.log("highestPrice is"+highestPrice)
+
+                });
+                
+
 
             }
 
@@ -168,9 +180,12 @@ let HighestPrice = ""
 
 
 
+
+
     }
-    
-  );
+
+    );
+
 
 }
 
